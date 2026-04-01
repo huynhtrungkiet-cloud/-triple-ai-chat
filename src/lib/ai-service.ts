@@ -135,65 +135,68 @@ export async function callMultipleAI(messages: AIMessage[], providers: string[])
 }> {
   const results: { [key: string]: AIResponse } = {};
 
-  const promises = [];
+  const promises: Promise<void>[] = [];
 
   if (providers.includes('claude')) {
     promises.push(
-      callClaude(messages)
-        .then(text => {
+      (async () => {
+        try {
+          const text = await callClaude(messages);
           results.claude = {
             text,
             provider: 'claude',
             timestamp: Date.now(),
           };
-        })
-        .catch(error => {
+        } catch (error) {
           results.claude = {
-            text: `Error: ${error.message}`,
+            text: `Error: ${error instanceof Error ? error.message : 'Unknown error'}`,
             provider: 'claude',
             timestamp: Date.now(),
           };
-        })
+        }
+      })()
     );
   }
 
   if (providers.includes('openai')) {
     promises.push(
-      callOpenAI(messages)
-        .then(text => {
+      (async () => {
+        try {
+          const text = await callOpenAI(messages);
           results.openai = {
             text,
             provider: 'openai',
             timestamp: Date.now(),
           };
-        })
-        .catch(error => {
+        } catch (error) {
           results.openai = {
-            text: `Error: ${error.message}`,
+            text: `Error: ${error instanceof Error ? error.message : 'Unknown error'}`,
             provider: 'openai',
             timestamp: Date.now(),
           };
-        })
+        }
+      })()
     );
   }
 
   if (providers.includes('gemini')) {
     promises.push(
-      callGemini(messages)
-        .then(text => {
+      (async () => {
+        try {
+          const text = await callGemini(messages);
           results.gemini = {
             text,
             provider: 'gemini',
             timestamp: Date.now(),
           };
-        })
-        .catch(error => {
+        } catch (error) {
           results.gemini = {
-            text: `Error: ${error.message}`,
+            text: `Error: ${error instanceof Error ? error.message : 'Unknown error'}`,
             provider: 'gemini',
             timestamp: Date.now(),
           };
-        })
+        }
+      })()
     );
   }
 
